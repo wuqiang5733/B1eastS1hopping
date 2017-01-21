@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 
 import com.carlosapps.beastshopping.R;
 import com.carlosapps.beastshopping.services.AccountServices;
+import com.squareup.otto.Subscribe;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +57,15 @@ public class RegisterActivity extends BaseActivity {
 
     @OnClick(R.id.activity_register_registerButton)
     public void setRegisterButton(){
+        // 对应的处理方法在 LiveAccountServices 当中
         bus.post(new AccountServices.RegisterUserRequest(userName.getText().toString(),userEmail.getText().toString(),mProgressDialog));
+    }
+
+    @Subscribe
+    public void RegisterUser(AccountServices.RegisteruserResponse response){
+        if (!response.didSuceed()){
+            userEmail.setError(response.getPropertyError("email"));
+            userName.setError(response.getPropertyError("userName"));
+        }
     }
 }

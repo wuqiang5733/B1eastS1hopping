@@ -25,7 +25,7 @@ public class LiveAccountServices extends BaseLiveService {
         if (response.didSuceed()){
             Toast.makeText(application.getApplicationContext(),"User will be registered shortly",Toast.LENGTH_LONG).show();
         }
-
+        // 对应的处理方法在 RegisterActivity 当中
         bus.post(response);
     }
 }
