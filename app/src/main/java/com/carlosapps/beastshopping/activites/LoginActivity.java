@@ -1,7 +1,9 @@
 package com.carlosapps.beastshopping.activites;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.widget.Button;
@@ -10,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.carlosapps.beastshopping.R;
+import com.carlosapps.beastshopping.infrastructure.Utils;
 import com.carlosapps.beastshopping.services.AccountServices;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -49,6 +52,7 @@ public class LoginActivity extends BaseActivity {
 
     private ProgressDialog mProgressDialog;
     private CallbackManager mCallbackManager;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +66,8 @@ public class LoginActivity extends BaseActivity {
         mProgressDialog.setTitle("Loading....");
         mProgressDialog.setMessage("Attempting Log In");
         mProgressDialog.setCancelable(false);
+
+        sharedPreferences = getSharedPreferences(Utils.MY_PREFERENCE, Context.MODE_PRIVATE);
     }
 
     @OnClick(R.id.activity_login_registerButton)
@@ -74,7 +80,7 @@ public class LoginActivity extends BaseActivity {
     public void setLoginButton() {
         // 接收程序在 LiveAccountServices 当中
         bus.post(new AccountServices.LogUserInRequest(userEmail.getText().toString(),
-                userPassword.getText().toString(), mProgressDialog));
+                userPassword.getText().toString(), mProgressDialog,sharedPreferences));
     }
 
     @Subscribe
@@ -104,7 +110,7 @@ public class LoginActivity extends BaseActivity {
                                     String name = object.getString("name");
                                     // 接收程序在 LiveAccountServices 当中
                                     bus.post(new AccountServices.LogUserInFacebookRequest(loginResult.getAccessToken(), mProgressDialog,
-                                            name, email));
+                                            name, email,sharedPreferences));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
