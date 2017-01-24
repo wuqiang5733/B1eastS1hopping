@@ -18,7 +18,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Subscribe;
 
 import org.json.JSONException;
@@ -57,7 +56,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         linearLayout.setBackgroundResource(R.drawable.background_screen_two);
-        FirebaseAuth.getInstance().signOut();  // 运行这个 Activity 必须是退出状态
+//        FirebaseAuth.getInstance().signOut();  // 运行这个 Activity 必须是退出状态
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle("Loading....");
@@ -72,25 +71,25 @@ public class LoginActivity extends BaseActivity {
     }
 
     @OnClick(R.id.activity_login_loginButton)
-    public void setLoginButton(){
+    public void setLoginButton() {
         // 接收程序在 LiveAccountServices 当中
         bus.post(new AccountServices.LogUserInRequest(userEmail.getText().toString(),
-                userPassword.getText().toString(),mProgressDialog));
+                userPassword.getText().toString(), mProgressDialog));
     }
+
     @Subscribe
-    public void LogUserIn(AccountServices.LogUserInResponse response){
-        if (!response.didSuceed()){
+    public void LogUserIn(AccountServices.LogUserInResponse response) {
+        if (!response.didSuceed()) {
             userEmail.setError(response.getPropertyError("email"));
             userPassword.setError(response.getPropertyError("password"));
         }
     }
 
 
-
     @OnClick(R.id.activity_login_facebook_button)
-    public void setFacebookButton(){
+    public void setFacebookButton() {
         mCallbackManager = CallbackManager.Factory.create();
-        facebookButton.setReadPermissions("email","public_profile");
+        facebookButton.setReadPermissions("email", "public_profile");
 
         facebookButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -100,40 +99,43 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
                                 // 为了获得用户名与邮箱
-                                try{
+                                try {
                                     String email = object.getString("email");
                                     String name = object.getString("name");
-                                    bus.post(new AccountServices.LogUserInFacebookRequest(loginResult.getAccessToken(),mProgressDialog,
-                                            name,email));
-                                } catch (JSONException e){
+                                    // 接收程序在 LiveAccountServices 当中
+                                    bus.post(new AccountServices.LogUserInFacebookRequest(loginResult.getAccessToken(), mProgressDialog,
+                                            name, email));
+                                } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                             }
                         });
 
                 Bundle parameters = new Bundle();
-                parameters.putString("fields","id,name,email,gender,birthday");
+                parameters.putString("fields", "id,name,email,gender,birthday");
                 graphRequest.setParameters(parameters);
                 graphRequest.executeAsync();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(getApplication(),"An Unknown Error Occurred.",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplication(), "An Unknown Error Occurred.", Toast.LENGTH_LONG).show();
 
             }
 
             @Override
             public void onError(FacebookException error) {
-                Toast.makeText(getApplication(),error.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplication(), error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
 
     }
+
     @Override
+    // Facebook 使用
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mCallbackManager.onActivityResult(requestCode,resultCode,data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 }
