@@ -25,7 +25,7 @@ public class BaseActivity extends AppCompatActivity {
         application = (BeastShoppingApplication) getApplication();
         bus = application.getBus();
         bus.register(this);
-        printKeyHash();
+//        printKeyHash();
     }
 
     @Override

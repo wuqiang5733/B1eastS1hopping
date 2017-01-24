@@ -3,6 +3,7 @@ package com.carlosapps.beastshopping.services;
 import android.app.ProgressDialog;
 
 import com.carlosapps.beastshopping.infrastructure.ServiceResponse;
+import com.facebook.AccessToken;
 
 public class AccountServices {
     private AccountServices() {
@@ -45,5 +46,22 @@ public static class LogUserInRequest{
 
     /*********************************************************************************************************/
 
+    public static class LogUserInFacebookRequest{
+        public AccessToken accessToken;
+        public ProgressDialog progressDialog;
+        public String userName;
+        public String userEmail;
+//        public SharedPreferences sharedPreferences;
+
+
+        public LogUserInFacebookRequest(AccessToken accessToken, ProgressDialog progressDialog, String userName, String userEmail) {
+            this.accessToken = accessToken;
+            this.progressDialog = progressDialog;
+            this.userName = userName;
+            this.userEmail = userEmail;
+//            this.sharedPreferences = sharedPreferences;
+        }
+    }
+    /*********************************************************************************************************/
 
 }
