@@ -14,6 +14,5 @@ public class BaseLiveService {
         bus = application.getBus();
         bus.register(this);
         auth = FirebaseAuth.getInstance();
-//        auth = FirebaseAuth.getInstance();
     }
 }

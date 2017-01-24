@@ -82,8 +82,43 @@ public class LiveAccountServices extends BaseLiveService {
         }
         // 对应的处理方法在 RegisterActivity 当中
         bus.post(response);
-
     }
 
+    /**************************************************************************************************************/
+    @Subscribe
+    public void LogInUser(final AccountServices.LogUserInRequest request) {
+        AccountServices.LogUserInResponse response = new AccountServices.LogUserInResponse();
+
+        if (request.userEmail.isEmpty()) {
+            response.setPropertyErrors("email", "Please enter your email");
+        }
+
+        if (request.userPassword.isEmpty()) {
+            response.setPropertyErrors("password", "Please enter your password");
+        }
+
+        if (response.didSuceed()) {
+            request.progressDialog.show();
+            auth.signInWithEmailAndPassword(request.userEmail, request.userPassword)
+                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (!task.isSuccessful()) {
+                                request.progressDialog.dismiss();
+                                Toast.makeText(application.getApplicationContext(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            } else {
+                                Firebase userLocation = new Firebase(Utils.FIRE_BASE_USER_REFERENCE + Utils.encodeEmail(request.userEmail));//
+
+                                userLocation.child("hasLoggedInWithPassword").setValue(true);
+                                request.progressDialog.dismiss();
+                                Toast.makeText(application.getApplicationContext(),"User has logged in !" ,Toast.LENGTH_LONG).show();
+
+                            }
+                        }
+                    });
+
+        }
+        bus.post(response); // 处理代码在 LoginActivity 当中
+    }
 
 }
